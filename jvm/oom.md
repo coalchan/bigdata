@@ -98,3 +98,55 @@ Exception in thread "main" java.lang.StackOverflowError
 
 所以当出现该错误的时候，先考虑是否操作系统有线程数的限制，这个时候可能就需要调整最大文件数。然后考虑是不是堆内存太大，导致实际分配给每个线程使用的栈容量过小，这个时候可能需要**减小**最大堆内存设置或者**减小**最大栈设置，从而换取更多的线程。
 
+## 方法区溢出
+
+方法区用于存储Class相关的信息，如类名、访问修饰符、字段描述、方法描述等。需要注意的是**字符串常量池**从Java8之后已经由堆内存进行管理，并且取消了永久代（相关的JVM参数`-XX:PermSize`和`-XX:MaxPermSize`也已经无用）。
+
+下面利用CGLib来创建大量的Class，从而导致方法区内存溢出。
+
+```java
+/**
+ * VM Args: -XX:MetaspaceSize=10M -XX:MaxMetaspaceSize=10M
+ * @author chenzhipeng
+ * @date 2019/1/18 18:24
+ */
+public class MethodAreaOOM {
+    public static void main(String[] args) {
+        while (true) {
+            Enhancer enhancer = new Enhancer();
+            enhancer.setSuperclass(MethodAreaOOM.class);
+            enhancer.setUseCache(false);
+            enhancer.setCallback((MethodInterceptor) (obj, method, args1, proxy) -> proxy.invoke(obj, args1));
+            enhancer.create();
+        }
+    }
+}
+```
+
+运行结果：
+
+```
+Exception in thread "main" net.sf.cglib.core.CodeGenerationException: java.lang.reflect.InvocationTargetException-->null
+	at net.sf.cglib.core.AbstractClassGenerator.generate(AbstractClassGenerator.java:345)
+	at net.sf.cglib.proxy.Enhancer.generate(Enhancer.java:492)
+	at net.sf.cglib.core.AbstractClassGenerator$ClassLoaderData.get(AbstractClassGenerator.java:114)
+	at net.sf.cglib.core.AbstractClassGenerator.create(AbstractClassGenerator.java:291)
+	at net.sf.cglib.proxy.Enhancer.createHelper(Enhancer.java:480)
+	at net.sf.cglib.proxy.Enhancer.create(Enhancer.java:305)
+	at com.luckypeng.study.jvm.oom.MethodAreaOOM.main(MethodAreaOOM.java:18)
+Caused by: java.lang.reflect.InvocationTargetException
+	at sun.reflect.GeneratedMethodAccessor1.invoke(Unknown Source)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at net.sf.cglib.core.ReflectUtils.defineClass(ReflectUtils.java:459)
+	at net.sf.cglib.core.AbstractClassGenerator.generate(AbstractClassGenerator.java:336)
+	... 6 more
+Caused by: java.lang.OutOfMemoryError: Metaspace
+	at java.lang.ClassLoader.defineClass1(Native Method)
+	at java.lang.ClassLoader.defineClass(ClassLoader.java:763)
+	... 11 more
+```
+
+ ## 直接内存溢出
+
+在使用ByteBuffer中的allocateDirect()的时候会用到，很多javaNIO(像netty)的框架中被封装为其他的方法，出现该问题时会抛出java.lang.OutOfMemoryError: Direct buffer memory异常。

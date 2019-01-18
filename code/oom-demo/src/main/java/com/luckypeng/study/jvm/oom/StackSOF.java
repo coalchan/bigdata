@@ -3,7 +3,7 @@ package com.luckypeng.study.jvm.oom;
 /**
  * 栈溢出: StackOverflowError
  * VM Args: -Xss128k
- * @author chenzhipeng
+ * @author coalchan
  * @date 2019/1/18 11:13
  */
 public class StackSOF {

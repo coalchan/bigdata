@@ -4,8 +4,8 @@ import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 
 /**
- * VM Args: -XX:MetaspaceSize=1M -XX:MaxMetaspaceSize=1M
- * @author chenzhipeng
+ * VM Args: -XX:MetaspaceSize=10M -XX:MaxMetaspaceSize=10M
+ * @author coalchan
  * @date 2019/1/18 18:24
  */
 public class MethodAreaOOM {
