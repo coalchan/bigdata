@@ -53,3 +53,48 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 
 ## 虚拟机栈和本地方法栈溢出
 
+栈容量可以由JVM参数`-Xss`来设置，JVM定义了两种异常：
+
+1. 如果线程请求的栈深度大于JVM所允许的最大深度，则抛出`StackOverflowError`异常；
+2. 如果JVM在扩展栈时无法申请到足够的内存空间，则抛出`OutOfMemoryError`异常。
+
+下面通过一个无限递归调用的例子来模拟第一种情况（第二种情况实际很慢模拟出来）：
+
+```java
+/**
+ * 栈溢出: StackOverflowError
+ * VM Args: -Xss128k
+ * @author chenzhipeng
+ * @date 2019/1/18 11:13
+ */
+public class StackSOF {
+    private static int stackLength = 0;
+
+    static void stack() {
+        stackLength++;
+        stack();
+    }
+
+    public static void main(String[] args) {
+        try {
+            stack();
+        } catch (Throwable e) {
+            System.out.println("栈深度: " + stackLength);
+            throw e;
+        }
+    }
+}
+```
+
+运行结果：
+
+```
+Connected to the target VM, address: '127.0.0.1:56330', transport: 'socket'
+栈深度: 1079
+Exception in thread "main" java.lang.StackOverflowError
+```
+
+注意该区域占用的是堆外内存，实践中每个进程的最大内存是有限的，从中减去最大堆内存（`Xmx`的值），再减去 MaxPermSize（最大方法区容量），程序计数器占用的很小暂且忽略，剩下的就是虚拟机栈和本地方法栈的了。
+
+所以当出现该错误的时候，先考虑是否操作系统有线程数的限制，这个时候可能就需要调整最大文件数。然后考虑是不是堆内存太大，导致实际分配给每个线程使用的栈容量过小，这个时候可能需要**减小**最大堆内存设置或者**减小**最大栈设置，从而换取更多的线程。
+
