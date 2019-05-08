@@ -94,14 +94,6 @@ PS: 看到了吧，这就是我们要付出的代价。
 
 ![](../img/algorithm/hbase-scan.png)
 
-
-
-Kafka
-
-TiDB
-
-
-
 ## 参考文章
 
 1. [通俗易懂的Redis数据结构基础教程](https://juejin.im/post/5b53ee7e5188251aaa2d2e16)
@@ -109,4 +101,3 @@ TiDB
 3. [Redis内部数据结构详解(5)——quicklist](http://zhangtielei.com/posts/blog-redis-quicklist.html)
 4. [HBase原理－数据读取流程解析](http://hbasefly.com/2016/12/21/hbase-getorscan/)
 5. [HBase原理－迟到的‘数据读取流程’部分细节](http://hbasefly.com/2017/06/11/hbase-scan-2/)
-6. ​
