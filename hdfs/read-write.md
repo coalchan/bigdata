@@ -4,9 +4,7 @@
 
 ### 流程
 
-![](D:/other-code/interview-preparation/img/hdfs/read.png)
-
-
+![](../img/hdfs/read.png)
 
 1. 打开分布式文件：调用分布式文件 DistributedFileSystem.open( ) 方法；
 2. 寻址请求：从 NameNode 处得到 DataNode 的地址，DistributedFileSystem使用 RPC 方式调用了NameNode，NameNode 返回存有该副本的DataNode 地址，DistributedFileSystem 返回了一个输入流对象（FSDataInputStream），该对象封装了输入流 DFSInputStream；
@@ -28,7 +26,7 @@
 
 ### 流程
 
-![](D:/other-code/interview-preparation/img/hdfs/write.png)
+![](../img/hdfs/write.png)
 
 1. 客户端调用 DistributedFileSystem 的 create() 方法，开始创建新文件：DistributedFileSystem 创建 DFSOutputStream，产生一个 RPC 调用，让 NameNode 在文件系统的命名空间中创建这一新文件；
 2. NameNode 接收到用户的写文件的 RPC 请求后，先要执行各种检查，如客户是否有相关的创建权限和该文件是否已存在等，检查都通过后才会创建一个新文件，并将操作记录到编辑日志，然后 DistributedFileSystem会将 DFSOutputStream 对象包装在 FSDataOutStream 实例中，返回客户端；否则文件创建失败并且给客户端抛 IOException。
