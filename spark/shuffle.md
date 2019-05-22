@@ -106,11 +106,11 @@
 
 ## 触发 Shuffle 的操作
 
-| 分类            | 操作                                                    |
-| --------------- | ------------------------------------------------------- |
-| repartition相关 | repartition、coalesce                                   |
-| *ByKey操作      | groupByKey、reduceByKey、combineByKey、aggregateByKey等 |
-| join相关        | cogroup、join                                           |
+| 分类             | 操作                                                     |
+| ---------------- | -------------------------------------------------------- |
+| repartition 相关 | repartition、coalesce                                    |
+| *ByKey 操作      | groupByKey、reduceByKey、combineByKey、aggregateByKey 等 |
+| join 相关        | cogroup、join                                            |
 
 ## Spark Shuffle 历史节点
 
