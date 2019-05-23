@@ -1,6 +1,8 @@
+# Spark SQL 常见问题
+
 #### 1. Spark SQL 运行架构
 
-![](D:/other-code/interview-preparation/img/spark/catalyst.png)
+![](../img/spark/catalyst.png)
 
 1. SqlParser 将 SQL 语句转换为未解析的逻辑查询计划；
 2. Analyzer 对逻辑查询计划进行属性和关系关联检验；

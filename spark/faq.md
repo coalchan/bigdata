@@ -1,10 +1,10 @@
 # Spark 常见问题
 
-#### RDD 是什么？
+#### 1. RDD 是什么？
 
 一个只读的，可分区的分布式数据集，这个数据集的全部或部分可以缓存在内存中，在多次计算间重用。
 
-#### RDD 的数据结构？
+#### 2. RDD 的数据结构？
 
 1. 一个分区列表，每个分区里是RDD的部分数据（或称数据块）。
 2. 一个依赖列表，存储依赖的其他RDD。
@@ -12,7 +12,7 @@
 4. 分区器（可选），用于键/值类型的 RDD，比如某个 RDD 是按散列来分区。
 5. 计算各分区时优先的位置列表（可选），比如从 HDFS 上的文件生成 RDD 时，RDD分区的位置优先选择数据所在的节点，这样可以避免数据移动带来的开销。
 
-#### RDD 的特点有哪些？
+#### 3. RDD 的特点有哪些？
 
 1. 只读：状态不可变，不能修改。
 2. 分区：支持使 RDD 中的元素根据那个 key 来分区（partitioning），保存到多个结点上。还原时只会重新计算丢失分区的数据，而不会影响整个系统。
@@ -21,31 +21,31 @@
 5. 延迟计算： Spark 也会延迟计算 RDD ，使其能够将转换管道化（pipeline transformation）。
 6. 操作：丰富的转换（transformation）和动作（action）， count/reduce/collect/save 等。
 
-#### RDD 底层实现原理
+#### 4. RDD 底层实现原理
 
-![](D:/other-code/interview-preparation/img/spark/rdd-mechanism.png)
+![](../img/spark/rdd-mechanism.png)
 
 每个 RDD 的数据都以 Block 的形式存储于多台机器上，上图是 Spark 的 RDD 存储架构图，其中每个 Executor 会启动一个 BlockManagerSlave，并管理一部分 Block；而 Block 的元数据由 Driver 节点的 BlockManagerMaster保存。BlockManagerSlave 生成 Block 后向 BlockManagerMaster 注册该 Block， BlockManagerMaster 管理 RDD 与 Block 的关系，当 RDD 不再需要存储的时候，将向 BlockManagerSlave 发送指令删除相应的 Block。
 
-#### Spark DAG 是什么？
+#### 5. Spark DAG 是什么？
 
-![](D:/other-code/interview-preparation/img/spark/dag.png)
+![](../img/spark/dag.png)
 
 这个 DAG 中的点就是 RDD 或者 stage，边就是各种算子。
 
-#### 什么是宽依赖和窄依赖？
+#### 6. 什么是宽依赖和窄依赖？
 
 窄依赖指的是一个父 RDD 的分区至多被一个子 RDD 的分区使用，如 map、filter 等算子；
 
 宽依赖指的是一个父 RDD 的分区被多个子 RDD 的分区使用，如 join、reduceByKey 等算子。
 
-#### RDD 的血缘机制？
+#### 7. RDD 的血缘机制？
 
 每个 RDD 除了包含**分区信息**外，还包含它**从父辈 RDD 变换过来的步骤**，以及**如何重建某一块数据的信息**，因此 RDD 的这种容错机制又称“血统”（**Lineage**）容错。Lineage 本质上很类似于数据库中的重做日志（Redo Log），只不过这个重做日志粒度很大，是对全局数据做同样的重做以便恢复数据。
 
 相比其他系统的细颗粒度的内存数据更新级别的备份或者 LOG 机制，RDD 的 Lineage 记录的是粗颗粒度的特定数据 Transformation 操作（如 filter、map、join 等）。当这个 RDD 的部分分区数据丢失时，它可以通过 Lineage获取足够的信息来重新计算和恢复丢失的数据分区。但这种数据模型粒度较粗，因此限制了 Spark 的应用场景。所以可以说 Spark 并不适用于所有高性能要求的场景，但同时相比细颗粒度的数据模型，也带来了性能方面的提升。
 
-#### Spark 的容错机制
+#### 8. Spark 的容错机制
 
 一般而言，对于分布式系统，数据集的容错性通常有两种方式：
 
@@ -56,24 +56,24 @@
 
 通常在含有宽依赖的容错中，使用 Checkpoint 机制设置检查点，这样就不至于重新计算父 RDD 而产生冗余计算了（具体可以参考上面“宽依赖”的定义）。
 
-#### Spark的集群架构
+#### 9. Spark的集群架构
 
-![](D:/other-code/interview-preparation/img/spark/cluster-overview.png)
+![](../img/spark/cluster-overview.png)
 
 - SparkContext 负责与 ClusterManager 通信，进行资源的申请、任务的分配和监控等，并负责作业执行的全生命周期管理。
 - ClusterManager 提供了资源的分配和管理，目前支持 Standalone、Apache Mesos、Hadoop Yarn 。
 - 当 SparkContext 对运行的作业划分并分配资源后，会把任务发送 Executor 来运行。每个 Executor 是独立的进程，并以多线程方式运行 Task 。
 
-#### Spark 的资源调度与作业调度？
+#### 10. Spark 的资源调度与作业调度？
 
-![](D:/other-code/interview-preparation/img/spark/spark-run.png)
+![](../img/spark/spark-run.png)
 
 1. 首先为应用构建起基本的运行环境，即由 Driver 创建一个 SparkContext，进行资源的申请、任务的分配和监控。
 2. 资源管理器为 Executor 分配资源，并启动 Executor 进程。
 3. SparkContext 根据 RDD 的依赖关系构建 DAG 图，DAG 图提交给 DAGScheduler 解析成 Stage，然后把一个个 TaskSet 提交给底层调度器 TaskScheduler 处理；Executor 向 SparkContext 申请 Task，Task Scheduler将 Task 发放给 Executor运行，并提供应用程序代码。
 4. Task 在 Executor 上运行，把执行结果反馈给 TaskScheduler，然后反馈给 DAGScheduler，运行完毕后写入数据并释放所有资源。
 
-#### Stage 是如何划分的？
+#### 11. Stage 是如何划分的？
 
 Spark 通过分析各个 RDD 的依赖关系生成 DAG，再通过分析各个 RDD 中的分区之间的依赖关系来决定如何划分 Stage，具体划分方法是：
 
@@ -95,7 +95,7 @@ Stage 的类型包括两种：
 
    最终的 Stage，没有输出，而是直接产生结果或存储。这种 Stage 是直接输出结果，其输入边界可以是从外部获取数据，也可以是另一个 ShuffleMapStage 的输出。在一个 Job 里必定有该类型 Stage。因此，一个 Job 含有一个或多个 Stage，其中至少含有一个 ResultStage。
 
-#### Spark 的资源调度粒度？
+#### 12. Spark 的资源调度粒度？
 
 |      | 粗粒度                                                       | 细粒度                                                       |
 | ---- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -105,7 +105,7 @@ Stage 的类型包括两种：
 
 注意：Yarn 上粗粒度的资源申请和细粒度的资源申请，针对的是实现 ApplicationMaster 的方式是粗粒度的还是细粒度来定义的。Spark 在 Yarn 上实现的 ApplicationMaster 是**以粗粒度的方式实现**的，而 MapReduce 在 Yarn 上实现的 ApplicationMaster 是以细粒度的方式实现的。
 
-#### Spark 中的 RPC 模块是用什么实现的？
+#### 13. Spark 中的 RPC 模块是用什么实现的？
 
 在 Spark 2.0 之前，使用的是 Akka，在 2.0 以后底层通信调用 Netty，虽然剥离了Akka，但是还是沿袭了Actor模式中的一些概念。在现在的Spark RPC中有如下映射关系：
 
@@ -115,21 +115,9 @@ RpcEndpointRef => ActorRef
 RpcEnv => ActorSystem
 ```
 
-#### Spark Standalone 运行模式
+#### 14. Spark Yarn-Cluster 和 Yarn-Client 模式的区别
 
-来自书
-
-#### Spark Yarn-Client 运行模式
-
-来自书
-
-#### Spark Yarn-Cluster 运行模式
-
-来自书
-
-#### Spark Yarn-Cluster 和 Yarn-Client 模式的区别
-
-Yarn-Cluster 和 Yarn-Client 模式的区别其实**就是 Application Master 进程的区别**，Yarn-Cluster 模式下，**Driver 运行在 AM（Application Master）中**，它负责向 YARN 申请资源，并监督作业的运行状况。当用户提交了作业之后，就可以关掉 Client，作业会继续在 YARN 上运行。**因而 Yarn-Cluster 模式不适合运行交互类型的作业**。在 Yarn-Client 模式下，Application Master 仅仅向 YARN 请求 Executor，而 **Driver 会在 Client 上启动**，Client 会和请求的 Container 通信来调度他们工作，也就是说 Client 不能离开。
+Yarn-Cluster 和 Yarn-Client 模式的区别其实**就是 Application Master 进程和 Driver 的区别**，Yarn-Cluster 模式下，**Driver 运行在 AM（Application Master）中**，它负责向 YARN 申请资源，并监督作业的运行状况。当用户提交了作业之后，就可以关掉 Client，作业会继续在 YARN 上运行。**因而 Yarn-Cluster 模式不适合运行交互类型的作业**。在 Yarn-Client 模式下，Application Master 仅仅向 YARN 请求 Executor，而 **Driver 会在 Client 上启动**，Client 会和请求的 Container 通信来调度他们工作，也就是说 Client 不能离开。
 
 #### 附：常见术语
 

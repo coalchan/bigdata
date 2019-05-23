@@ -28,7 +28,7 @@
 
 下图描述了 MapReduce 的整个流程，其中 Shuffle 是介于 Map 和 Reduce 之间。
 
-![](D:/other-code/interview-preparation/img/spark/mapreduce-process.jpg)
+![](../img/spark/mapreduce-process.jpg)
 
 上面我们提到 Shuffle 分为 Shuffle Write 和 Shuffle Read，下面我们就针对 Spark 中的情况逐一讲解。
 
