@@ -1,10 +1,10 @@
-# OutOfMemoryError 异常
+# 常见 OOM 异常
 
-除了PC寄存器（或者称为程序计数器）之外，JVM的其他几个内存区域都会有发生`OutOfMemorryError`（简称`OOM`）异常的可能。
+除了 PC 寄存器（或者称为程序计数器）之外，JVM 的其他几个内存区域都会有发生 `OutOfMemorryError` （简称 `OOM` ）异常的可能。
 
-## Java堆溢出
+## Java 堆溢出
 
-Java堆用于存储对象实例，只要不断创建对象，切保证GC Roots到对象之间有可达路径来避免垃圾回收机制清除这些对象，那么对象数量达到最大堆的容量限制后就会产生内存溢出异常。
+Java堆用于存储对象实例，只要不断创建对象，切保证 GC Roots 到对象之间有可达路径来避免垃圾回收机制清除这些对象，那么对象数量达到最大堆的容量限制后就会产生内存溢出异常。
 
 ```java
 /**
@@ -49,14 +49,14 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 
 2. 内存溢出
 
-   查看堆参数（`Xms`和`Xmx`）能否调大，另外看看某些对象是不是存储周期过长或者不必要等。
+   查看堆参数（ `Xms` 和 `Xmx` ）能否调大，另外看看某些对象是不是存储周期过长或者不必要等。
 
 ## 虚拟机栈和本地方法栈溢出
 
-栈容量可以由JVM参数`-Xss`来设置，JVM定义了两种异常：
+栈容量可以由JVM参数 `-Xss` 来设置，JVM 定义了两种异常：
 
-1. 如果线程请求的栈深度大于JVM所允许的最大深度，则抛出`StackOverflowError`异常；
-2. 如果JVM在扩展栈时无法申请到足够的内存空间，则抛出`OutOfMemoryError`异常。
+1. 如果线程请求的栈深度大于 JVM 所允许的最大深度，则抛出 `StackOverflowError` 异常；
+2. 如果 JVM 在扩展栈时无法申请到足够的内存空间，则抛出 `OutOfMemoryError` 异常。
 
 下面通过一个无限递归调用的例子来模拟第一种情况（第二种情况实际很慢模拟出来）：
 
@@ -94,15 +94,15 @@ Connected to the target VM, address: '127.0.0.1:56330', transport: 'socket'
 Exception in thread "main" java.lang.StackOverflowError
 ```
 
-注意该区域占用的是堆外内存，实践中每个进程的最大内存是有限的，从中减去最大堆内存（`Xmx`的值），再减去 MaxPermSize（最大方法区容量），程序计数器占用的很小暂且忽略，剩下的就是虚拟机栈和本地方法栈的了。
+注意该区域占用的是堆外内存，实践中每个进程的最大内存是有限的，从中减去最大堆内存（ `Xmx` 的值），再减去 MaxPermSize（最大方法区容量），程序计数器占用的很小暂且忽略，剩下的就是虚拟机栈和本地方法栈的了。
 
 所以当出现该错误的时候，先考虑是否操作系统有线程数的限制，这个时候可能就需要调整最大文件数。然后考虑是不是堆内存太大，导致实际分配给每个线程使用的栈容量过小，这个时候可能需要**减小**最大堆内存设置或者**减小**最大栈设置，从而换取更多的线程。
 
 ## 方法区溢出
 
-方法区用于存储Class相关的信息，如类名、访问修饰符、字段描述、方法描述等。需要注意的是**字符串常量池**从Java8之后已经由堆内存进行管理，并且取消了永久代（相关的JVM参数`-XX:PermSize`和`-XX:MaxPermSize`也已经无用）。
+方法区用于存储 Class 相关的信息，如类名、访问修饰符、字段描述、方法描述等。需要注意的是**字符串常量池**从 Java8 之后已经由堆内存进行管理，并且取消了永久代（相关的JVM参数 `-XX:PermSize` 和 `-XX:MaxPermSize` 也已经无用）。
 
-下面利用CGLib来创建大量的Class，从而导致方法区内存溢出。
+下面利用 CGLib 来创建大量的 Class，从而导致方法区内存溢出。
 
 ```java
 /**
@@ -149,4 +149,4 @@ Caused by: java.lang.OutOfMemoryError: Metaspace
 
  ## 直接内存溢出
 
-在使用ByteBuffer中的allocateDirect()的时候会用到，很多javaNIO(像netty)的框架中被封装为其他的方法，出现该问题时会抛出java.lang.OutOfMemoryError: Direct buffer memory异常。
+在使用 ByteBuffer 中的 allocateDirect() 的时候会用到，很多 javaNIO（如 netty）的框架中被封装为其他的方法，出现该问题时会抛出 `java.lang.OutOfMemoryError: Direct buffer memory` 异常。

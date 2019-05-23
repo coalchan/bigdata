@@ -2,7 +2,7 @@
 
 #### Spark Standalone 运行模式
 
-![](D:/other-code/interview-preparation/img/spark/standalone.jpg)
+![](../img/spark/standalone.jpg)
 
 1. 启动应用程序，在 SparkContext 启动过程中，先初始化 DAGScheduler 和 TaskSchedulerImpl 两个调度器，同时初始化 SparkDeploySchedulerBackend，并在其内部启动终端点 DriverEndpoint 和 ClientEndpoint。
 2. 终端点 ClientEndpoint 向 Master 注册应用程序，Master 收到注册消息后把该应用加入到等待运行列表中，等待由 Master 分派给应用程序 Worker。
