@@ -9,8 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>leetcode</artifactId>
+    <artifactId>sorting</artifactId>
 
-    <dependencies>
-    </dependencies>
+
 </project>
