@@ -8,6 +8,10 @@ import com.luckypeng.study.algorithm.sorting.util.ArrayUtils;
  * @date 2019/06/02
  */
 public class SelectSort {
+    /**
+     * 每次选择最小的元素放在前面
+     * @param array
+     */
     public static void selectSort(Integer[] array) {
         int min;
         for (int i = 0; i < array.length; i++) {

@@ -4,11 +4,11 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class SelectSortTest extends AbstractSort{
+public class StraightInsertionSortTest extends AbstractSort {
 
     @Test
-    public void selectSort() {
-        SelectSort.selectSort(test);
+    public void sort() {
+        StraightInsertionSort.sort(test);
         assertArrayEquals(refers, test);
     }
 }

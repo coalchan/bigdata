@@ -10,6 +10,7 @@ import com.luckypeng.study.algorithm.sorting.util.ArrayUtils;
 public class BubbleSort {
     /**
      * 简单交换排序
+     * 依次拿元素跟后面所有的元素做比较，大小相反则交换
      * @param array
      */
     public static void swapSort(Integer[] array) {
@@ -24,6 +25,7 @@ public class BubbleSort {
 
     /**
      * 冒泡排序
+     * 从末尾开始，两两比较，如果大小相反，则交换，这样小的就一直往前走，滚到最前面就是最小的
      * @param array
      */
     public static void bubbleSort(Integer[] array) {
