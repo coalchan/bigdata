@@ -3,21 +3,28 @@
 ## 数据结构与算法
 
 1. [数据结构大梳理](algorithm/summary.md)
-2. [常见系统的数据结构应用](algorithm/common-data-structure.md)
+2. [常见排序算法](algorithm/sort-algorithm.md)
+3. [常见系统的数据结构应用](algorithm/common-data-structure.md)
 
 ## Java
 
 ### JVM
 
-1. [JVM基础](jvm/jvm-base.md)
-2. [类加载](jvm/class-load.md)
-3. [Java 内存模型](jvm/memory-model.md)
-4. [常见 OOM 异常](jvm/oom.md)
-5. [反射](jvm/reflect.md)
+1. [JVM基础](java/jvm/jvm-base.md)
+2. [类加载](java/jvm/class-load.md)
+3. [Java 内存模型](java/jvm/memory-model.md)
+4. [常见 OOM 异常](java/jvm/oom.md)
+5. [反射](java/jvm/reflect.md)
+6. [JVM 中的垃圾回收（GC）](java/jvm/gc.md)
+
+### 集合框架
+
+1. [集合框架类总结](java/collection/summary.md)
 
 ## 操作系统
 
 1. [Linux 中的零拷贝技术](os/linux-zero-copy.md)
+2. [几种 I/O 模型](os/io-model.md)
 
 ## 分布式理论
 
