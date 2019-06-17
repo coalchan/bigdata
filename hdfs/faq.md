@@ -39,3 +39,12 @@ hdfs 的元数据存储在 NameNode 节点的本地文件中，目录结构如�
 NameNode 在执行 HDFS 客户端提交的创建文件或者移动文件这样的写操作的时候，会**首先把这些操作记录在 EditLog 文件**之中，然后**再更新内存中的文件系统镜像**。
 
 NameNode 会**定期对内存中的文件系统镜像进行 checkpoint 操作**，在磁盘上生成 FSImage 文件，FSImage 文件的文件名形如 fsimage_${end_txid}，其中 ${end_txid} 表示这个 fsimage 文件的结束事务 id。
+
+#### 7. HDFS 的 checkpoint 机制
+
+checkpoint，就是将某一个时间点的内存镜像，完整地存放到磁盘的过程。一般来说有两种：
+
+1. 非 HA 模式下，通过单独的节点，即 Checkpoint Node 或者 Backup Node 完成。
+2. HA 模式下，通过 Standby NameNode 完成，完成以后通过 http PUT 方式，将生成的 image 上传给 Active NameNode。
+
+第 2 种更常见。
