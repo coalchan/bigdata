@@ -160,7 +160,7 @@ CMS 收集器是基于“标记-清理”算法实现的，它的运作过程相
 
 其中，初始标记、重新标记这两个步骤仍然需要“Stop The World”
 
-![](../img/jvm/cms-gc.jpg)
+![](../../img/jvm/cms-gc.jpg)
 
 CMS 收集器主要优点：
 
@@ -187,7 +187,7 @@ G1 收集器的优势：
 
 G1 收集器的运作大致可划分为以下步骤：
 
-![](../img/jvm/g1-gc.jpg)
+![](../../img/jvm/g1-gc.jpg)
 
 1. 初始标记
 
@@ -213,7 +213,7 @@ ZGC 是在 JDK11 发布的，而且性能意想不到的优秀！在 SPECjbb 201
 
 下图是上面几种垃圾收集器在新生代和老年代的组合方式：
 
-![](../img/jvm/collectors.jpg)
+![](../../img/jvm/collectors.jpg)
 
 ## 内存划分
 

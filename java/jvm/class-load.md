@@ -14,7 +14,7 @@
 
 这里不得不提的是类加载的一个模型——双亲委派模型（*parent*-delegation model，貌似翻译为父辈代理模型更加合适）。
 
-![](../img/jvm/class-loader.png)
+![](../../img/jvm/class-loader.png)
 
 **基本描述**是：如果一个类加载器收到了类加载的请求，首先会把该请求委托给父类加载器去完成。
 
