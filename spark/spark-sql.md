@@ -53,6 +53,54 @@ Spark SQL 规定 Broadcast Hash Join 执行的基本条件为被广播小表必�
 
 简单来说 Sort Merge Join 就是通过排序加快了 Hash Join。
 
+#### 4. 查看执行计划
+
+直接运行 spark-shell 命令，然后执行以下代码：
+```scala
+case class Person(name:String, state:String, age:Int);
+
+sc.parallelize(List(Person("zhangsan","a", 10),Person("lisi", "a", 20))).toDF().registerTempTable("people")
+
+val query = sql("select name,state,sum(age) from people where age < 10 group by name,state")
+```
+
+1. 查看未解析的逻辑计划：```query.queryExecution.logical```
+```text
+res23: org.apache.spark.sql.catalyst.plans.logical.LogicalPlan =
+'Aggregate ['name, 'state], ['name, 'state, unresolvedalias('sum('age), None)]
++- 'Filter ('age < 10)
+   +- 'UnresolvedRelation `people`
+```
+
+2. 查看解析后的逻辑计划：```query.queryExecution.analyzed```
+```text
+res24: org.apache.spark.sql.catalyst.plans.logical.LogicalPlan =
+Aggregate [name#11, state#12], [name#11, state#12, sum(cast(age#13 as bigint)) AS sum(age)#83L]
++- Filter (age#13 < 10)
+   +- SubqueryAlias people
+      +- SerializeFromObject [staticinvoke(class org.apache.spark.unsafe.types.UTF8String, StringType, fromString, assertnotnull(assertnotnull(input[0, Person, true])).name, true, false) AS name#11, staticinvoke(class org.apache.spark.unsafe.types.UTF8String, StringType, fromString, assertnotnull(assertnotnull(input[0, Person, true])).state, true, false) AS state#12, assertnotnull(assertnotnull(input[0, Person, true])).age AS age#13]
+         +- ExternalRDD [obj#10]
+```
+
+3. 查看优化后的逻辑计划：```query.queryExecution.optimizedPlan```
+```text
+res25: org.apache.spark.sql.catalyst.plans.logical.LogicalPlan =
+Aggregate [name#11, state#12], [name#11, state#12, sum(cast(age#13 as bigint)) AS sum(age)#83L]
++- Filter (age#13 < 10)
+   +- SerializeFromObject [staticinvoke(class org.apache.spark.unsafe.types.UTF8String, StringType, fromString, assertnotnull(input[0, Person, true]).name, true, false) AS name#11, staticinvoke(class org.apache.spark.unsafe.types.UTF8String, StringType, fromString, assertnotnull(input[0, Person, true]).state, true, false) AS state#12, assertnotnull(input[0, Person, true]).age AS age#13]
+      +- ExternalRDD [obj#10]
+```
+
+4. 查看物理计划：```query.queryExecution.sparkPlan```
+```text
+res26: org.apache.spark.sql.execution.SparkPlan =
+HashAggregate(keys=[name#11, state#12], functions=[sum(cast(age#13 as bigint))], output=[name#11, state#12, sum(age)#83L])
++- HashAggregate(keys=[name#11, state#12], functions=[partial_sum(cast(age#13 as bigint))], output=[name#11, state#12, sum#88L])
+   +- Filter (age#13 < 10)
+      +- SerializeFromObject [staticinvoke(class org.apache.spark.unsafe.types.UTF8String, StringType, fromString, assertnotnull(input[0, Person, true]).name, true, false) AS name#11, staticinvoke(class org.apache.spark.unsafe.types.UTF8String, StringType, fromString, assertnotnull(input[0, Person, true]).state, true, false) AS state#12, assertnotnull(input[0, Person, true]).age AS age#13]
+         +- Scan ExternalRDDScan[obj#10]
+```
+
 #### 参考文章
 
 1. [BigData－‘基于代价优化’究竟是怎么一回事？](http://hbasefly.com/2017/05/04/bigdata%EF%BC%8Dcbo/?ymtkti=qul851)
