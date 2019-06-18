@@ -114,7 +114,7 @@ G1 收集器（或者垃圾优先收集器）的设计初衷是为了尽量缩�
 
 Serial收集器是新生代单线程收集器，优点是简单高效，算是最基本、发展历史最悠久的收集器。它在进行垃圾收集时，必须暂停其他所有的工作线程，直到它收集完成。
 
-![](../img/jvm/serial-gc.jpg)
+![](../../img/java/jvm/serial-gc.jpg)
 
 Serial 收集器依然是虚拟机运行在 Client 模式下默认新生代收集器，对于运行在 Client 模式下的虚拟机来说是一个很好的选择。
 
@@ -122,7 +122,7 @@ Serial 收集器依然是虚拟机运行在 Client 模式下默认新生代收�
 
 ParNew 收集器是**新生代并行收集器**，其实就是 Serial 收集器的多线程版本。
 
-![](../img/jvm/parnew-gc.jpg)
+![](../../img/java/jvm/parnew-gc.jpg)
 
 除了使用多线程进行垃圾收集之外，其余行为包括 Serial 收集器可用的所有控制参数、收集算法、Stop The World、对象分配规则、回收策略等都与 Serial 收集器完全一样。
 
@@ -160,7 +160,7 @@ CMS 收集器是基于“标记-清理”算法实现的，它的运作过程相
 
 其中，初始标记、重新标记这两个步骤仍然需要“Stop The World”
 
-![](../../img/jvm/cms-gc.jpg)
+![](../../img/java/jvm/cms-gc.jpg)
 
 CMS 收集器主要优点：
 
@@ -187,7 +187,7 @@ G1 收集器的优势：
 
 G1 收集器的运作大致可划分为以下步骤：
 
-![](../../img/jvm/g1-gc.jpg)
+![](../../img/java/jvm/g1-gc.jpg)
 
 1. 初始标记
 
@@ -213,13 +213,13 @@ ZGC 是在 JDK11 发布的，而且性能意想不到的优秀！在 SPECjbb 201
 
 下图是上面几种垃圾收集器在新生代和老年代的组合方式：
 
-![](../../img/jvm/collectors.jpg)
+![](../../img/java/jvm/collectors.jpg)
 
 ## 内存划分
 
 ### G1 之前的 JVM 内存划分
 
-![](../img/jvm/jvm-memory-before-g1.jpg)
+![](../../img/java/jvm/jvm-memory-before-g1.jpg)
 
 - 新生代：伊甸园区（eden）+ 2个幸存区（Survivor）
 - 老年代
@@ -228,7 +228,7 @@ ZGC 是在 JDK11 发布的，而且性能意想不到的优秀！在 SPECjbb 201
 
 此时的 **GC 流程**如下图所示：
 
-![](../img/jvm/gc-processing.jpg)
+![](../../img/java/jvm/gc-processing.jpg)
 
 注意：这里的 Survivor 实际上是有两块的，一般新生代的内存比例是——
 
@@ -244,7 +244,7 @@ Eden : Survivor(from) : Survivor(to) = 8:1:1，也就是说新生代会浪费 10
 
 ### G1 收集器的 JVM 内存划分
 
-![](../img/jvm/jvm-memory-g1.jpg)
+![](../../img/java/jvm/jvm-memory-g1.jpg)
 
 **G1 堆内存结构**
 

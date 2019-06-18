@@ -6,7 +6,7 @@ Java 需要在 JVM 上运行。核心过程是编译器将 Java 代码转换成 
 
 ## Java 内存管理
 
-![](../../img/jvm/jvm-memory.png)
+![](../../img/java/jvm/jvm-memory.png)
 
 如图所示，class 文件会被加载到 Java 虚拟机中，加载后的 Java 类存在于**方法区**，实际运行时会执行方法区的代码。
 

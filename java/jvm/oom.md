@@ -37,7 +37,7 @@ Exception in thread "main" java.lang.OutOfMemoryError: Java heap space
 解决思路：
 
 分析堆转储快照文件，最简单的可以使用jdk自带的jhat命令分析，也可以使用更加高级的一些可视化工具。以上实例中，通过运行`jhat java_pid2680.hprof`，访问`http://localhost:7000`可以看到如下页面信息：
-![](../../img/jvm-heap-jhat.png)
+![](../../img/java/jvm/jvm-heap-jhat.png)
 
 这里便可以进一步定位问题了。
 
