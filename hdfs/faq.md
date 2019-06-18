@@ -68,3 +68,9 @@ checkpoint，就是将某一个时间点的内存镜像，完整地存放到磁�
 4. 从 HDFS 底层解决小文件问题：
     * HDFS-8998，基本思想是把许多小的 Block 合并成一个大 Block，这样一个 block 将包含多个文件，从而减少文件元数据的条数，以此来减少 NN 的内存消耗。
     * HDFS-8286，从解决 NN 管理的元数据入手，将 NN 管理的元数据从保存在内存转向到保存在第三方 KV 存储系统中，以此减缓 NN 的内存使用。
+
+#### 11. Namenode 的命名空间数据结构
+
+![](../img/hdfs/namenode-data-structure.png)
+
+在整个 Namespace 目录树中存在两种不同类型的 INode 数据结构：INodeDirectory 和 INodeFile 。其中 INodeDirectory 标识的是目录树中的目录，INodeFile 标识的是目录树中的文件，二者均继承自 INode。
