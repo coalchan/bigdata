@@ -1,8 +1,38 @@
-# Apache Druid
+# Apache Druid 简介
 
 ## Druid 是什么
 
-Druid 是一个分布式的、支持实时多维OLAP分析的数据处理系统。它既支持高速的数据实时摄入处理，也支持实时且灵活的多维数据分析查询。因此Druid最常用的场景就是大数据背景下、灵活快速的多维 OLAP 分析。 另外，Druid 还有一个关键的特点：它支持根据时间戳对数据进行预聚合摄入和聚合分析，因此也有用户经常在有时序数据处理分析的场景中用到它。
+Druid 是一个分布式的、支持实时多维 OLAP 分析的数据处理系统。它既支持高速的数据实时摄入处理，也支持实时且灵活的多维数据分析查询。因此 Druid 最常用的场景就是大数据背景下、灵活快速的多维 OLAP 分析。 另外，Druid 还有一个关键的特点：它支持根据时间戳对数据进行预聚合摄入和聚合分析，因此也有用户经常在有时序数据处理分析的场景中用到它。
+
+## 为什么用 Druid
+
+### 特性
+
+1. 亚秒响应的交互式查询，支持较高并发。
+
+2. 支持实时导入，导入即可被查询，支持高并发导入。
+
+3. 采用分布式 shared-nothing 的架构，可以扩展到PB级。
+
+4. 支持聚合函数，count 和 sum，以及使用 javascript 实现自定义 UDF。
+
+5. 支持复杂的 Aggregator，近似查询的 Aggregator 例如 HyperLoglog 以及 Yahoo 开源的 DataSketches。
+
+6. 支持Groupby，Select，Search查询。
+
+7. 不支持大表之间的Join，但其 lookup 功能满足和维度表的 Join。
+
+这里最关键的前两条。
+
+### 不支持
+
+1. 不支持精确去重
+
+2. 不支持 Join（只能进行 semi-join）
+
+3. 不支持根据主键的单条记录更新
+
+如果不能接受这几点，则可以考虑放弃使用 Druid 了。
 
 ## 为什么快
 
@@ -43,7 +73,7 @@ Runs Coordinator and Overlord processes, manages data availability and ingestion
 
 Runs Broker and optional Router processes, handles queries from external clients.
 
-* Router 节点：可选节点，在 Broker 集群之上的API网关，有了 Router 节点 Broker 不在是单点服务了，提高了并发查询的能力。
+* Router 节点：可选节点，在 Broker 集群之上的 API 网关，有了 Router 节点 Broker 不再是单点服务了，提高了并发查询的能力。
 * Broker：负责从客户端接收查询请求，并将查询请求转发给 Historical 节点和 MiddleManager 节点。Broker 节点需要感知 Segment 信息在集群上的分布。
 
 #### Data
@@ -60,7 +90,7 @@ Runs Historical and MiddleManager processes, executes ingestion workloads and st
 * Deep Storage：用于存储 Segment 文件供 Historical 节点下载。Deep Storage 不属于 Druid 内部组件，用户可根据系统规模来自定义配置。单节点可用本地磁盘，分布式可用 HDFS。
 
 ## 存储
-Druid数据存储在“datasources”中，类似于传统RDBMS中的表。每个datasource按时间划分，并可选择进一步按其他属性划分。每个时间范围称为“chunk”（例如，如果您的datasource按天分区，则为一天）。在chunk内，数据被划分为一个或多个“segments”。每个segments都是单个文件，通常包含多达几百万行数据。
+Druid 数据存储在“datasources”中，类似于传统RDBMS中的表。每个 datasource 按时间划分，并可选择进一步按其他属性划分。每个时间范围称为“chunk”（例如，如果您的 datasource 按天分区，则为一天）。在 chunk 内，数据被划分为一个或多个“segments”。每个 segment 都是单个文件，通常包含多达几百万行数据。
 
 ### 数据结构
 
@@ -72,7 +102,7 @@ DataSource 是一个逻辑概念，表示 Druid 的基本数据结构，可以�
 - 维度（Dimension）：标识数据行的各个类别信息。
 - 指标（Metric）：用于聚合计算的列，这些指标列通常是一些数字，主要操作包括 Count、Sum 和 Mean 等。
 
-#### Segment 
+#### Segment
 
 Segment 是 Druid 中数据的实际物理存储格式，Druid 正是通过 Segment 实现了对数据的横纵向切割（Slice and Dice）操作：
 
@@ -91,92 +121,7 @@ Segment 是 Druid 中数据的实际物理存储格式，Druid 正是通过 Segm
 
 ```<dataSource>_<intervalStart>_<intervalEnd>_<version>_<partitionNum>```
 
-
-
-计算
-
-
-
-调度
-
-
-
-负载均衡
-
-
-
-部署
-
-
-
-数据导入方式
-
-Tranquility (Stream Push)
-
-Kafka Indexing Service (Stream Pull)
-
-
-
-查询 API
-
-
-
-## druid的高可用性
-
-1. MetaStore挂掉：无法感知新的Segment生成，不影响老数据
-2. Indexing Service挂掉：无法执行新的任务，新数据无法摄入，不影响查询
-3. Broker挂掉：本Broker节点不能查询，其他节点Broker继续服务，不影响数据摄入
-4. Historical挂掉：Coordinator Node重分配该节点上segment到其它节点
-5. Coordinator挂掉：Segment不会被加载和删除，选举新leader
-6. Zookeeper挂掉：无法执行新的任务，新数据进不来；Broker有缓存
-
-
-
-运维监控
-
-
-
-冷热数据分离
-
-
-
-与 Superset 集成
-
-
-
-#### 丰富的辅助功能
-
-Druid除了基本的核心数据消费和查询功能外，还提供了丰富的辅助功能，以帮助用户更好地基于Druid完成数据处理工作。本文简单列举几个：
-
-**DataSketches aggregator：**近似计算COUNT DISTINCT等问题，如PV、留存等；精度可调节。
-
-**Multi-value dimensions：**对于同一维度列，允许不同行拥有不同数量的数据值：这使得Druid也能够有类似schemaless的功能。
-
-
-
-支持数据自动过期吗？类似与 Kafka 那种
-
-
-
-## 特性
-
-- 亚秒响应的交互式查询，支持较高并发。
-- 支持实时导入，导入即可被查询，支持高并发导入。
-- 采用分布式 shared-nothing 的架构，可以扩展到PB级。
-- 支持聚合函数，count 和 sum，以及使用 javascript 实现自定义 UDF。
-- 支持复杂的 Aggregator，近似查询的 Aggregator 例如 HyperLoglog 以及 Yahoo 开源的 DataSketches。
-- 支持Groupby，Select，Search查询。
-- 不支持大表之间的Join，但其 lookup 功能满足和维度表的 Join 。
-
-## 不支持
-
-不支持精确去重
-
-不支持 Join（只能进行 semi-join）
-
-不支持根据主键的单条记录更新
-
-
+由于篇幅有限，后续文章将会陆续介绍环境部署、各个组件的功能、数据的摄入、数据的查询、冷热分离、运维监控、与 Superset 集成等。
 
 ## 参考文档
 
